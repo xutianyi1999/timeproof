@@ -27,6 +27,4 @@ match timeproof::verify_license(&vk, &license).await {
 }
 ```
 
-## 设计
 
-详见 [DESIGN.md](DESIGN.md)。
