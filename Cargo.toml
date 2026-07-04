@@ -1,6 +1,6 @@
 [package]
 name = "timeproof"
-version = "0.1"
+version = "0.1.0"
 description = "Trusted-clock + offline license verification via TLS NTP"
 edition = "2021"
 
