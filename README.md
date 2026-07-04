@@ -8,7 +8,7 @@
 
 ```toml
 [dependencies]
-timeproof = "0.1"
+timeproof = { git = "https://github.com/xutianyi1999/timeproof" }
 ```
 
 ## API
