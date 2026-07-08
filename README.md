@@ -21,7 +21,7 @@ let (sk, vk) = timeproof::generate_keypair();
 let license = timeproof::create_license(&sk, 1893456000);
 
 // 验证 License（内部走 HTTPS 取真实时间）
-match timeproof::verify_license(&vk, &license).await {
+match timeproof::verify_license(&vk, &license, &timeproof::TIME_SOURCES).await {
     Ok(info) => println!("OK: exp={}", info.exp),
     Err(e) => eprintln!("DENIED: {e}"),
 }

@@ -6,7 +6,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use time::format_description::well_known::Rfc2822;
 use time::OffsetDateTime;
 
-const TIME_SOURCES: &[&str] = &["https://www.baidu.com", "https://www.aliyun.com"];
+pub const TIME_SOURCES: &[&str] = &["https://www.baidu.com", "https://www.aliyun.com"];
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(5);
 const IAT_SKEW_TOLERANCE: u64 = 86400;
 
@@ -66,7 +66,7 @@ pub fn create_license(sk: &[u8; 32], exp: u64) -> String {
     format!("v1.{}.{}", encoded, sig_hex)
 }
 
-pub async fn verify_license(pk: &[u8; 32], license: &str) -> Result<LicenseInfo, Error> {
+pub async fn verify_license(pk: &[u8; 32], license: &str, time_sources: &[&str]) -> Result<LicenseInfo, Error> {
     let public_key = VerifyingKey::from_bytes(pk).map_err(|_| Error::InvalidFormat)?;
 
     let mut root_store = rustls::RootCertStore::empty();
@@ -82,7 +82,7 @@ pub async fn verify_license(pk: &[u8; 32], license: &str) -> Result<LicenseInfo,
         .build()?;
 
     let info = parse_license_key(&public_key, license)?;
-    let now = fetch_trusted_time(&client).await?;
+    let now = fetch_trusted_time(&client, time_sources).await?;
 
     if now > info.exp {
         return Err(Error::Expired { exp: info.exp, now });
@@ -140,9 +140,9 @@ async fn fetch_date_header(client: &reqwest::Client, url: &str) -> Result<u64, E
     Ok(dt.unix_timestamp() as u64)
 }
 
-async fn fetch_trusted_time(client: &reqwest::Client) -> Result<u64, Error> {
+async fn fetch_trusted_time(client: &reqwest::Client, time_sources: &[&str]) -> Result<u64, Error> {
     let mut last_err = None;
-    for url in TIME_SOURCES {
+    for url in time_sources {
         match fetch_date_header(client, url).await {
             Ok(ts) => return Ok(ts),
             Err(e) => last_err = Some(e),

@@ -6,7 +6,7 @@ edition = "2021"
 
 [dependencies]
 base64 = "0.22"
-ed25519-dalek = "2.2"
+ed25519-dalek = "3.0"
 hex = "0.4"
 rand = "0.10"
 reqwest = { version = "0.13", default-features = false, features = ["rustls"] }
